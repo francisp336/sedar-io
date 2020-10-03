@@ -131,6 +131,29 @@ min_opp_and_max_play_mobility.description = "a player that makes move based off 
 // add more here!
 // don't forget to add the function to the list below
 
+function longest_distance(board, arrow, player_pos, current_player) {
+  var game_state = new State(board, arrow, player_pos, current_player);
+  var children = game_state.expand();
+  var player_row = Math.floor(player_pos[current_player] / 8);
+  var player_col = player_pos[current_player] % 8;
+
+  function get_distance_to_space(child) {
+    var pos = child.player_pos[1 - child.current_player]
+    var row = Math.floor(pos / 8);
+    var col = pos % 8;
+    var row_diff = Math.abs(player_row - row);
+    var col_diff = Math.abs(player_col - col);
+    return row_diff > col_diff ? row_diff : col_diff;
+  }
+
+  var farthest_child = children.reduce(function (farthest_child, current_child) {
+    return get_distance_to_space(current_child) > get_distance_to_space(farthest_child) ?
+      current_child : farthest_child;
+  });
+
+  return farthest_child.player_pos[1 - farthest_child.current_player];
+}
+longest_distance.description = "Always chooses to travel the longest distance possible where moving diagonally counts as 1. When faced with a tie, chooses the lowest position";
 
 
 
@@ -144,4 +167,5 @@ var all_AI_list = [
   max_play_mobility,
   chaser,
   min_opp_and_max_play_mobility,
+  longest_distance,
 ];
